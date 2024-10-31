@@ -45,9 +45,8 @@ for k, df in tqdm(dfs.items(),total=len(dfs)):
         outputs = llm.generate(prompts, params)
         outputs = [output.outputs[0].text for output in outputs]
     
-    answer = [parse_boxed_value(o) for o in outputs]
-    df_result = pd.DataFrame({'question': df.question, 'answer': df.answer, 'solution': outputs, 'predicted': answer})
-     score = sum([1 for _,row in df.iterrows() if any([answer_in_last_sentence(row.solution,row.answer),parse_boxed_value(row.solution,row.answer)])])/len(df)*100
+    df_result = pd.DataFrame({'question': df.question, 'answer': df.answer, 'solution': outputs})
+    score = sum([1 for _,row in df_result.iterrows() if any([answer_in_last_sentence(row.solution,row.answer),parse_boxed_value(row.solution,row.answer)])])/len(df)*100
     scores[k] = score
     df_result.to_csv(f"results/{model_path}/{k}.csv", index=False)
 
