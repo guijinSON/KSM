@@ -1,0 +1,71 @@
+base_model: Qwen/Qwen2.5-7B-Instruct
+model_type: AutoModelForCausalLM
+tokenizer_type: AutoTokenizer
+trust_remote_code: false
+
+load_in_8bit: false
+load_in_4bit: false
+strict: false
+
+default_system_message: "Solve the given question. After solving the problem, state your final answer in the one of the following format: $\\boxed{N}$."
+chat_template: qwen_25
+datasets:
+  - path: train.jsonl
+    type: chat_template
+    field_messages: messages
+    message_field_role: role
+    message_field_content: content
+    roles:
+      user:
+        - user
+      assistant:
+        - assistant
+
+dataset_prepared_path:
+val_set_size: 0.005
+output_dir: ./outputs/out
+eval_sample_packing: False
+
+sequence_len: 8192
+sample_packing: true
+pad_to_sequence_len: true
+
+wandb_project: qwen_25
+wandb_entity:
+wandb_watch:
+wandb_name:
+wandb_log_model:
+
+gradient_accumulation_steps: 32
+micro_batch_size: 2
+num_epochs: 1
+optimizer: paged_adamw_8bit
+lr_scheduler: cosine
+learning_rate: 0.0002
+
+train_on_inputs: false
+group_by_length: false
+bf16: auto
+fp16:
+tf32: false
+
+gradient_checkpointing: unsloth
+gradient_checkpointing_kwargs:
+  use_reentrant: false
+early_stopping_patience:
+resume_from_checkpoint:
+local_rank:
+logging_steps: 1
+xformers_attention:
+flash_attention: true
+
+warmup_steps: 30
+evals_per_epoch: 4
+eval_table_size:
+eval_max_new_tokens: 128
+saves_per_epoch: 4
+debug:
+deepspeed: deepspeed_configs/zero1.json
+weight_decay: 0.0
+fsdp:
+special_tokens:
