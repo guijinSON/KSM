@@ -1,4 +1,4 @@
-base_model: NousResearch/Meta-Llama-3-8B-Instruct
+base_model: meta-llama/Llama-3.1-8B-Instruct
 model_type: LlamaForCausalLM
 tokenizer_type: AutoTokenizer
 
@@ -8,7 +8,7 @@ strict: false
 
 chat_template: llama3
 datasets:
-  - path: train.jsonl
+  - path: train-rm.jsonl
     type: chat_template
     field_messages: messages
     message_field_role: role
@@ -25,8 +25,8 @@ val_set_size: 0.05
 output_dir: ./outputs/out
 
 sequence_len: 8192
-sample_packing: true
-pad_to_sequence_len: true
+sample_packing: False
+pad_to_sequence_len: False
 eval_sample_packing: False
 
 plugins:
@@ -42,7 +42,7 @@ wandb_watch:
 wandb_name:
 wandb_log_model:
 
-gradient_accumulation_steps: 32
+gradient_accumulation_steps: 64
 micro_batch_size: 2
 num_epochs: 1
 optimizer: paged_adamw_8bit
@@ -68,7 +68,7 @@ warmup_steps: 30
 evals_per_epoch: 0
 eval_max_new_tokens: 128
 eval_table_size:
-saves_per_epoch: 1
+saves_per_epoch: 3
 debug:
 deepspeed: deepspeed_configs/zero1.json
 weight_decay: 0.01
