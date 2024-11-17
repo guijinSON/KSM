@@ -6,10 +6,13 @@ from datasets import load_dataset
 import pandas as pd
 from litellm import batch_completion
 from tqdm import tqdm
+import huggingface_hub
+
+huggingface_hub.login("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")
 
 # Set up argparse
 parser = argparse.ArgumentParser(description="Generate predictions and save results to CSV.")
-parser.add_argument('--cats', nargs='+', default=['MATH', 'GSM8K', 'OMNI_MATH'],
+parser.add_argument('--cats', nargs='+', default=['MATH', 'GSM8K', 'OMNI_MATH', "MMMLU", "KSM"],
                     help="List of dataset categories to process, separated by spaces.")
 parser.add_argument('--model_name', type=str, default='gpt-4o',
                     help="Name of the model to use for generating predictions.")
@@ -20,7 +23,7 @@ cats = args.cats
 model_name = args.model_name
 
 # Load datasets
-dfs = {cat: pd.DataFrame(load_dataset('amphora/KSM2K', cat)['test']) for cat in cats}
+dfs = {cat: pd.DataFrame(load_dataset('HAERAE-HUB/ksm', cat)['test']) for cat in cats}
 
 # Load model
 if model_name not in litellm_models:
