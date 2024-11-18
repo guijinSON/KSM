@@ -1,16 +1,16 @@
 import os
 import argparse
 from models import load_vllm_model, litellm_models
-from data import generate_queries_local, generate_queries_litellm, parse_boxed_value, answer_in_last_sentence
+from data import generate_queries_local, generate_queries_litellm, parse_boxed_value, answer_in_last_sentence, parse_mcqa_value, parse_ksm_value
 from datasets import load_dataset
 import pandas as pd
 from litellm import batch_completion
 from tqdm import tqdm
 import huggingface_hub
+import json
 
 # Set up argparse
 parser = argparse.ArgumentParser(description="Generate predictions and save results to CSV.")
-# parser.add_argument('--token', type=str, required=True)
 parser.add_argument('--cats', nargs='+', default=['MATH', 'GSM8K', 'OMNI_MATH', "MMMLU", "KSM"],
                     help="List of dataset categories to process, separated by spaces.")
 parser.add_argument('--model_name', type=str, default='gpt-4o',
@@ -20,10 +20,10 @@ args = parser.parse_args()
 # Retrieve arguments
 cats = args.cats
 model_name = args.model_name
-# huggingface_hub.login(args.token)
 
 # Load datasets
 dfs = {cat: pd.DataFrame(load_dataset('HAERAE-HUB/ksm', cat)['test']) for cat in cats}
+dfs["KSM"] = pd.read_csv("ksm_test.csv")
 
 # Load model
 if model_name not in litellm_models:
@@ -49,9 +49,18 @@ for k, df in tqdm(dfs.items(),total=len(dfs)):
         outputs = [output.outputs[0].text for output in outputs]
     
     df_result = pd.DataFrame({'question': df.question, 'answer': df.answer, 'solution': outputs})
-    score = sum([1 for _,row in df_result.iterrows() if any([answer_in_last_sentence(row.solution,row.answer),parse_boxed_value(row.solution,row.answer)])])/len(df)*100
+    if k in ["GSM8K", "MATH", "OMNI_MATH"]:
+        score = sum([1 for _,row in df_result.iterrows() if any([answer_in_last_sentence(row.solution,row.answer),parse_boxed_value(row.solution,row.answer)])])/len(df)*100
+    elif k == "MMMLU":
+        score = sum([1 for _,row in df_result.iterrows() if any([answer_in_last_sentence(row.solution,row.answer),parse_mcqa_value(row.question,row.solution,row.answer)])])/len(df)*100
+    elif k == "KSM":
+        score = sum([1 for _,row in df_result.iterrows() if parse_ksm_value(row.question,row.solution,row.answer)])/len(df)*100
     scores[k] = score
     df_result.to_csv(f"results/{model_path}/{k}.csv", index=False)
+
+os.makedirs("json_result", exist_ok=True)
+with open(f"json_result/{model_path}.json", "w") as f:
+    json.dump(scores, f, indent=4)
 
 print(f'########### {model_name} ###########')
 for k,v in scores.items():

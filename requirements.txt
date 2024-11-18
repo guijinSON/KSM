@@ -1,0 +1,4 @@
+vllm
+litellm
+datasets
+pandas

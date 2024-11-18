@@ -28,17 +28,56 @@ def match_digit_num(source_str, target_str, thres=10):
     source_n_count = len([1 for _ in source_str if _.isdigit()])
     target_n_count = len([1 for _ in target_str if _.isdigit()])
     return abs(target_n_count-source_n_count) > thres
+
+import re
+
+def mcqa_formatting(question, answer):
+    number_list = ["1.", "2.", "3.", "4.", "5."]
+    check = {num[0]: question.split(num)[-1].split("\n")[0].strip() for num in number_list if num in question}
+    
+    try:
+        float(answer)
+        answer_choice = str(answer)
+        answer_content = check[str(answer_choice)]
+    except:
+        answer_content = answer
+        for k, v in check.items():
+            if v == answer_content:
+                answer_choice = k
+
+    return answer_choice, answer_content
     
 def answer_in_last_sentence(input_string, answer):
     last_sentence = str(input_string).strip().split('\n')[-1]
     numbers_in_last_sentence = [float(num) for num in re.findall(r'\d+\.?\d*', last_sentence)]
-    return answer in numbers_in_last_sentence
+    return answer == numbers_in_last_sentence[-1]
     
 def parse_boxed_value(text,answer):
     match = re.search(r'\\boxed\{(\d+)\}', str(text))
     if match:
-        return float(match.group(1)) == answer
+        return str(match.group(1)) == str(answer)
     return False
+
+def parse_boxed_content_value(text, answer):
+    match = re.search(r'\\boxed\{([a-zA-Z0-9가-힣\=\+\-\*/\^\_\(\)\{\}\[\]\\ ]+)\}', str(text))
+    if match:
+        return str(answer) == str(match.group(1))
+    return False
+
+def parse_mcqa_value(question, text, answer):
+    answer_choice, answer_content = mcqa_formatting(question, answer)
+
+    return any([parse_boxed_value(text, answer_choice), parse_boxed_content_value(text, answer_content)])
+                
+def parse_ksm_value(question,text,answer):
+    if ("1." in question) and ("2." in question) and ("3." in question) and ("4." in question):
+        return parse_mcqa_value(question, text, answer)
+    else:
+        try:
+            float(answer)
+            return any([answer_in_last_sentence(text, answer), parse_boxed_value(text, answer)])
+        except:
+            return parse_boxed_content_value(text, answer)
         
 def generate_queries_local(df, model_name):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
