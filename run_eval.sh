@@ -28,7 +28,7 @@ models=(
     "meta-llama/Llama-3.2-3B-Instruct"
     )
 
-export HF_TOKEN="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"
+# export HF_TOKEN="YOUR_HF_TOKEN"
 # export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 
 # Loop through each model and run the Python script
