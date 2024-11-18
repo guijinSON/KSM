@@ -29,8 +29,6 @@ def match_digit_num(source_str, target_str, thres=10):
     target_n_count = len([1 for _ in target_str if _.isdigit()])
     return abs(target_n_count-source_n_count) > thres
 
-import re
-
 def mcqa_formatting(question, answer):
     number_list = ["1.", "2.", "3.", "4.", "5."]
     check = {num[0]: question.split(num)[-1].split("\n")[0].strip() for num in number_list if num in question}
@@ -50,7 +48,10 @@ def mcqa_formatting(question, answer):
 def answer_in_last_sentence(input_string, answer):
     last_sentence = str(input_string).strip().split('\n')[-1]
     numbers_in_last_sentence = [float(num) for num in re.findall(r'\d+\.?\d*', last_sentence)]
-    return answer == numbers_in_last_sentence[-1]
+    if len(numbers_in_last_sentence) > 0:
+        return answer == numbers_in_last_sentence[-1]
+    else:
+        return False
     
 def parse_boxed_value(text,answer):
     match = re.search(r'\\boxed\{(\d+)\}', str(text))
