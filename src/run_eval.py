@@ -10,7 +10,7 @@ import huggingface_hub
 
 # Set up argparse
 parser = argparse.ArgumentParser(description="Generate predictions and save results to CSV.")
-parser.add_argument('--token', type=str, required=True)
+# parser.add_argument('--token', type=str, required=True)
 parser.add_argument('--cats', nargs='+', default=['MATH', 'GSM8K', 'OMNI_MATH', "MMMLU", "KSM"],
                     help="List of dataset categories to process, separated by spaces.")
 parser.add_argument('--model_name', type=str, default='gpt-4o',
@@ -20,7 +20,7 @@ args = parser.parse_args()
 # Retrieve arguments
 cats = args.cats
 model_name = args.model_name
-huggingface_hub.login(args.token)
+# huggingface_hub.login(args.token)
 
 # Load datasets
 dfs = {cat: pd.DataFrame(load_dataset('HAERAE-HUB/ksm', cat)['test']) for cat in cats}
