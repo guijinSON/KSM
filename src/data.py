@@ -5,7 +5,7 @@ from collections import Counter
 from jinja2.exceptions import TemplateError
 
 system_message = """Solve the given question.
-After solving the problem, state your final answer in the one of the following format: $\\boxed{N}$."""
+After solving the problem, state your final answer in the following format: $\\boxed{N}$."""
 
 def check_duplication(input_str, thres=10):
     count = dict(Counter(input_str.split()))
