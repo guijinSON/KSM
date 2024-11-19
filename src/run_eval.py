@@ -45,7 +45,7 @@ for k, df in tqdm(dfs.items(),total=len(dfs)):
     else:
         prompts = generate_queries_local(df, model_name, lang)
         outputs = llm.generate(prompts, params)
-        outputs = [output.outputs[0].text for output in outputs]
+        outputs = [output.outputs[0].text.strip("</s2>") for output in outputs]
     
     if lang == "ko":
         df_result = pd.DataFrame({'question': df.question, 'answer': df.answer, 'solution': outputs})
