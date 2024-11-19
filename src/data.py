@@ -71,11 +71,10 @@ def convert_to_int_safe(string_number):
         
 def parse_boxed_value(text,answer):
     match = re.search(r'\\boxed\{(\d+[.,]?\d+)\}', str(text))
-    
     if match:
-        answer = convert_to_int_safe(match.group(1))
-        c1 = float(answer) == answer
-        c2 = str(answer) == str(answer)
+        pred = convert_to_int_safe(match.group(1))
+        c1 = float(pred) == answer
+        c2 = str(pred) == str(answer)
         return any([c1,c2])
     return False
 
