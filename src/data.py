@@ -65,7 +65,9 @@ def answer_in_last_sentence(input_string, answer):
 def parse_boxed_value(text,answer):
     match = re.search(r'\\boxed\{(\d+)\}', str(text))
     if match:
-        return str(match.group(1)) == str(answer)
+        c1 = float(match.group(1)) == answer
+        c2 = str(match.group(1)) == str(answer)
+        return any([c1,c2])
     return False
 
 def parse_boxed_content_value(text, answer):
