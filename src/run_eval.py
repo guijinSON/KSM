@@ -23,7 +23,6 @@ model_name = args.model_name
 
 # Load datasets
 dfs = {cat: pd.DataFrame(load_dataset('HAERAE-HUB/ksm', cat)['test']) for cat in cats}
-dfs["KSM"] = pd.read_csv("ksm_test.csv")
 
 # Load model
 if model_name not in litellm_models:
