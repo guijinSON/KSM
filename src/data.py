@@ -70,7 +70,7 @@ def convert_to_int_safe(string_number):
         return string_number
         
 def parse_boxed_value(text,answer):
-    match = re.search(r'\\boxed\{(\d+[.,]?\d+)\}', str(text))
+    match = re.search(r'\\boxed\{\s*([\d,]+(?:\.\d+)?)\s*\}', str(text))
     if match:
         pred = convert_to_int_safe(match.group(1))
         c1 = float(pred) == answer
@@ -81,7 +81,7 @@ def parse_boxed_value(text,answer):
 def parse_boxed_content_value(text, answer):
     match = re.search(r'\\boxed\{([a-zA-Z0-9가-힣\=\+\-\*/\^\_\(\)\{\}\[\]\\ ]+)\}', str(text))
     if match:
-        return any([str(answer) == str(match.group(1)), latex_expressions_equal(match.group(1), answer)])
+        return any([str(answer) == str(match.group(1)), latex_expressions_equal(str(match.group(1)), str(answer))])
     return False
 
 def parse_mcqa_value(question, text, answer):
@@ -94,7 +94,7 @@ def parse_ksm_value(question,text,answer):
         return parse_mcqa_value(question, text, answer)
     else:
         try:
-            float(answer)
+            answer = float(answer)
             return any([answer_in_last_sentence(text, answer), parse_boxed_value(text, answer)])
         except:
             return parse_boxed_content_value(text, answer)

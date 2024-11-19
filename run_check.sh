@@ -26,6 +26,8 @@ models=(
     "meta-llama/Llama-3.2-3B-Instruct"
     "meta-llama/Llama-3.1-8B-Instruct"
     "meta-llama/Llama-3.1-70B-Instruct"
+    "gpt-4o-mini"
+    "gpt-4o"
     )
 
 # export HF_TOKEN="YOURHF_TOKEN"
@@ -34,5 +36,5 @@ models=(
 # Loop through each model and run the Python script
 for model_name in "${models[@]}"; do
   echo "Running check for model: $model_name"
-  python src/check.py --model_name "$model_name"
+  python src/check.py --model_name "$model_name" --lang_type "ko"
 done

@@ -3,6 +3,7 @@ import torch
 
 litellm_models = [
     'gpt-4o',
+    'gpt-4o-mini',
     'gpt-4o-mini-2024-07-18'
 ]
     
