@@ -62,11 +62,19 @@ def answer_in_last_sentence(input_string, answer):
     else:
         return False
     
+def convert_to_int_safe(string_number):
+    cleaned = str(string_number).replace(',', '')
+    if re.fullmatch(r'\d+', cleaned): 
+        return float(cleaned)
+    else:
+        return string_number
+        
 def parse_boxed_value(text,answer):
-    match = re.search(r'\\boxed\{(\d+)\}', str(text))
+    match = re.search(r'\\boxed\{(\d+[.,]?\d+)\}', str(text))
+    answer = convert_to_int_safe(match.group(1))
     if match:
-        c1 = float(match.group(1)) == answer
-        c2 = str(match.group(1)) == str(answer)
+        c1 = float(answer) == answer
+        c2 = str(answer) == str(answer)
         return any([c1,c2])
     return False
 
