@@ -2,3 +2,5 @@ vllm
 litellm
 datasets
 pandas
+antlr4-python3-runtime
+sympy
