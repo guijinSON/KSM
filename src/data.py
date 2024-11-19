@@ -106,11 +106,13 @@ def generate_queries_local(df, model_name, lang):
     for _,row in df.iterrows():
         if lang == "ko":
             text = row.question
+            lang_command = "Respond in Korean."
         elif lang == "en":
             text = row.original
+            lang_command = "Respond in English."
         try:
             messages = [
-                    {"role": "system", "content": system_message},
+                    {"role": "system", "content": f"{system_message} {lang_command}"},
                     {"role": "user", "content": text}
                 ]
             qry = tokenizer.apply_chat_template(messages, tokenize=False)
@@ -118,7 +120,7 @@ def generate_queries_local(df, model_name, lang):
         except TemplateError as e:
             if str(e) == 'System role not supported':
                 messages = [
-                    {"role": "user", "content": system_message + '\n\n'+ text}
+                    {"role": "user", "content": f"{system_message} {lang_command}" + '\n\n'+ text}
                 ]
                 qry = tokenizer.apply_chat_template(messages, tokenize=False)
             else:
