@@ -55,6 +55,8 @@ for k, df in tqdm(dfs.items(),total=len(dfs)):
         else:
             df_result = pd.DataFrame({'question': df.original, 'answer': df.original_answer, 'solution': outputs})
 
+    df_result.to_csv(f"{lang}_results/{model_path}/{k}.csv", index=False)
+    
     if k in ["GSM8K", "MATH", "OMNI_MATH"]:
         score = sum([1 for _,row in df_result.iterrows() if any([answer_in_last_sentence(row.solution,row.answer),parse_boxed_value(row.solution,row.answer)])])/len(df)*100
     elif k == "MMMLU":
@@ -62,7 +64,6 @@ for k, df in tqdm(dfs.items(),total=len(dfs)):
     elif k == "KSM":
         score = sum([1 for _,row in df_result.iterrows() if parse_ksm_value(row.question,row.solution,row.answer)])/len(df)*100
     scores[k] = score
-    df_result.to_csv(f"{lang}_results/{model_path}/{k}.csv", index=False)
 
 os.makedirs(f"{lang}_json_result", exist_ok=True)
 with open(f"{lang}_json_result/{model_path}.json", "w") as f:

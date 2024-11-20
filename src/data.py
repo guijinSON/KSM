@@ -39,18 +39,17 @@ def latex_expressions_equal(solution, answer):
         return False
 
 def mcqa_formatting(question, answer):
-    number_list = ["1.", "2.", "3.", "4.", "5."]
-    check = {num[0]: question.split(num)[-1].split("\n")[0].strip() for num in number_list if num in question}
+    number_list = ["\n1. ", "\n2. ", "\n3. ", "\n4. ", "\n5. "]
+    check = {num[1]: question.split(num)[-1].split("\n")[0].strip() for num in number_list if num in question}
     
     try:
-        float(answer)
-        answer_choice = str(answer)
+        answer_choice = float(answer)
         answer_content = check[str(answer_choice)]
     except:
         answer_content = answer
         for k, v in check.items():
             if v == answer_content:
-                answer_choice = k
+                answer_choice = float(k)
 
     return answer_choice, answer_content
     
@@ -64,7 +63,7 @@ def answer_in_last_sentence(input_string, answer):
     
 def convert_to_int_safe(string_number):
     cleaned = str(string_number).replace(',', '')
-    if re.fullmatch(r'\d+', cleaned): 
+    if re.fullmatch(r'\d+(\.\d+)?', cleaned): 
         return float(cleaned)
     else:
         return string_number
