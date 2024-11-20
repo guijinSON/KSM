@@ -36,7 +36,7 @@ for d in data_list:
     elif d == "MMMLU":
         score = sum([1 for _,row in df_result.iterrows() if any([parse_mcqa_value(row.question,row.solution,row.answer)])])/len(df_result)*100
         for i in range(len(df_result)):
-            checks.append(check_func(any([parse_mcqa_value(df_result.loc[i, "question"],df_result.loc[i, "solution"],df_result.loc[i, "answer"])])))
+            checks.append(check_func(parse_mcqa_value(df_result.loc[i, "question"],df_result.loc[i, "solution"],df_result.loc[i, "answer"])))
     elif d == "KSM":
         score = sum([1 for _,row in df_result.iterrows() if parse_ksm_value(row.question,row.solution,row.answer)])/len(df_result)*100
         for i in range(len(df_result)):

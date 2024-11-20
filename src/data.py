@@ -44,7 +44,7 @@ def mcqa_formatting(question, answer):
     
     try:
         answer_choice = float(answer)
-        answer_content = check[str(answer_choice)]
+        answer_content = check[str(answer)]
     except:
         answer_content = answer
         for k, v in check.items():
