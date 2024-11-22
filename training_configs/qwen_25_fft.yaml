@@ -1,4 +1,4 @@
-base_model: Qwen/Qwen2.5-7B-Instruct
+base_model: Qwen/Qwen2.5-3B-Instruct
 model_type: AutoModelForCausalLM
 tokenizer_type: AutoTokenizer
 trust_remote_code: false
@@ -47,9 +47,10 @@ liger_rms_norm: true
 liger_swiglu: true
 liger_fused_linear_cross_entropy: true
 
-gradient_accumulation_steps: 64
-micro_batch_size: 4
-num_epochs: 1
+gradient_accumulation_steps: 4
+micro_batch_size: 8
+eval_batch_size: 4
+num_epochs: 3
 optimizer: paged_adamw_8bit
 lr_scheduler: cosine
 learning_rate: 2e-5
@@ -73,7 +74,7 @@ warmup_steps: 30
 evals_per_epoch: 3
 eval_max_new_tokens: 128
 eval_table_size:
-saves_per_epoch: 3
+saves_per_epoch: 1
 debug:
 deepspeed: deepspeed_configs/zero1.json
 weight_decay: 0.01
