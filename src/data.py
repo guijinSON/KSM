@@ -4,6 +4,7 @@ from collections import Counter
 from jinja2.exceptions import TemplateError
 from sympy import sympify, simplify
 from sympy.parsing.latex import parse_latex
+from prompts import prompts
 
 system_message = """Solve the given question.
 After solving the problem, state your final answer in the following format: $\\boxed{N}$."""
@@ -98,20 +99,18 @@ def parse_ksm_value(question,text,answer):
         except:
             return parse_boxed_content_value(text, answer)
         
-def generate_queries_local(df, model_name, lang):
+def generate_queries_local(df, model_name, prompt_id):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     qrys = []
     
     for _,row in df.iterrows():
-        if lang == "ko":
-            text = row.question
-            lang_command = "Respond in Korean."
-        elif lang == "en":
+        if prompt_id == "en":
             text = row.original
-            lang_command = "Respond in English."
+        else:
+            text = row.question
         try:
             messages = [
-                    {"role": "system", "content": f"{system_message} {lang_command}"},
+                    {"role": "system", "content": f"{system_message}" + '\n\n' + prompts[prompt_id]},
                     {"role": "user", "content": text}
                 ]
             qry = tokenizer.apply_chat_template(messages, tokenize=False)
@@ -119,7 +118,7 @@ def generate_queries_local(df, model_name, lang):
         except TemplateError as e:
             if str(e) == 'System role not supported':
                 messages = [
-                    {"role": "user", "content": f"{system_message} {lang_command}" + '\n\n'+ text}
+                    {"role": "user", "content": f"{system_message}" + '\n\n'+ prompts[prompt_id] + text}
                 ]
                 qry = tokenizer.apply_chat_template(messages, tokenize=False)
             else:
@@ -127,15 +126,15 @@ def generate_queries_local(df, model_name, lang):
         qrys.append(qry)
     return qrys
 
-def generate_queries_litellm(df, model_name, lang):
+def generate_queries_litellm(df, model_name, prompt_id):
     qrys = []
     for _,row in df.iterrows():
-        if lang == "ko":
-            text = row.question
-        elif lang == "en":
+        if prompt_id == "en":
             text = row.original
+        else:
+            text = row.question
         messages =  [
-            {"role": "system","content": system_message},       
+            {"role": "system","content": system_message + '\n\n' + prompts[prompt_id]},       
             {"role": "user","content": text}
         ]
         qrys.append(messages)
