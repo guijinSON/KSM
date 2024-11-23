@@ -1,0 +1,88 @@
+base_model: Qwen/Qwen2.5-Math-7B
+model_type: AutoModelForCausalLM
+tokenizer_type: AutoTokenizer
+trust_remote_code: false
+
+load_in_8bit: false
+load_in_4bit: false
+strict: false
+
+
+
+output_dir: ./outputs/out
+# chat_template: qwen_25
+# datasets:
+#   - path: train-3.jsonl
+#     type: chat_template
+#     field_messages: messages
+#     message_field_role: role
+#     message_field_content: content
+#     roles:
+#       system:
+#         - system
+#       user:
+#         - user
+#       assistant:
+#         - assistant
+train_on_inputs: false # Mask segments of your data
+datasets:
+  - path: train-4.jsonl
+    type: oasst
+
+dataset_prepared_path: last_run_prepared
+val_set_size: 0.005
+output_dir: ./outputs/out
+eval_sample_packing: False
+
+sequence_len: 8192
+sample_packing: False
+pad_to_sequence_len: False
+
+wandb_project: qwen_25
+wandb_entity:
+wandb_watch:
+wandb_name:
+wandb_log_model:
+
+plugins:
+  - axolotl.integrations.liger.LigerPlugin
+liger_rope: true
+liger_rms_norm: true
+liger_swiglu: true
+liger_fused_linear_cross_entropy: true
+
+gradient_accumulation_steps: 16
+micro_batch_size: 4
+eval_batch_size: 4
+num_epochs: 8
+optimizer: paged_adamw_8bit
+lr_scheduler: cosine
+learning_rate: 2e-5
+
+train_on_inputs: false
+group_by_length: false
+bf16: auto
+fp16:
+tf32: false
+
+gradient_checkpointing: true
+gradient_checkpointing_kwargs:
+  use_reentrant: false
+early_stopping_patience:
+resume_from_checkpoint:
+logging_steps: 1
+xformers_attention:
+flash_attention: true
+
+warmup_steps: 30
+evals_per_epoch: 3
+eval_max_new_tokens: 128
+eval_table_size:
+saves_per_epoch: 3
+debug:
+deepspeed: deepspeed_configs/zero1.json
+weight_decay: 0.01
+fsdp:
+fsdp_config:
+special_tokens:
+  eos_token: "<|endoftext|>"
