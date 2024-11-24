@@ -109,11 +109,14 @@ def generate_queries_local(df, model_name, prompt_id):
         else:
             text = row.question
         try:
-            messages = [
-                    {"role": "system", "content": f"{system_message}" + '\n\n' + prompts[prompt_id]},
-                    {"role": "user", "content": text}
-                ]
-            qry = tokenizer.apply_chat_template(messages, tokenize=False)
+            if prompt_id == 'oasst':
+                qry = prompts[prompt_id].replace("{instruction}",text)
+            else:
+                messages = [
+                        {"role": "system", "content": f"{system_message}" + '\n\n' + prompts[prompt_id]},
+                        {"role": "user", "content":  text}
+                    ]
+                qry = tokenizer.apply_chat_template(messages, tokenize=False)
             
         except TemplateError as e:
             if str(e) == 'System role not supported':
@@ -123,8 +126,7 @@ def generate_queries_local(df, model_name, prompt_id):
                 qry = tokenizer.apply_chat_template(messages, tokenize=False)
             else:
                 print(f"An error occurred: {e}")
-        qrys.append(qry)
-    return qrys
+        qrys.appen
 
 def generate_queries_litellm(df, model_name, prompt_id):
     qrys = []
