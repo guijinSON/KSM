@@ -2,6 +2,7 @@ prompts = {
     "default":"",
     "ko":"Repond in Korean.",
     "en":"Repond in English.",
+    "oasst":"### Instruction:\n{instruction}\n\n### Response:\n",
     "TBST":"""Follow the steps to solve the given question.
 1. Translate the question to English and repeat it. 
 2. Breakdown the question to understand it.
