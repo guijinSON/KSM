@@ -126,7 +126,8 @@ def generate_queries_local(df, model_name, prompt_id):
                 qry = tokenizer.apply_chat_template(messages, tokenize=False)
             else:
                 print(f"An error occurred: {e}")
-        qrys.appen
+        qrys.append(qry)
+    return qrys
 
 def generate_queries_litellm(df, model_name, prompt_id):
     qrys = []
