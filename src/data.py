@@ -99,21 +99,29 @@ def parse_ksm_value(question,text,answer):
         except:
             return parse_boxed_content_value(text, answer)
         
-def generate_queries_local(df, model_name, prompt_id):
+def generate_queries_local(df, model_name, prompt_type, prompt_id):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     qrys = []
     
     for _,row in df.iterrows():
-        if prompt_id in ["en",'oasst_en']:
+        if (prompt_id in ["en",'oasst_en']) or (prompt_type in ["e2e", "e2k"]):
             text = row.original
         else:
             text = row.question
+
         try:
             if 'oasst' in prompt_id:
                 qry = prompts[prompt_id].replace("{instruction}",text)
             else:
+                if prompt_type in ["k2k", "k2e"]:
+                    msg = prompts["ko"]
+                elif prompt_type in ["e2e", "e2k"]:
+                    msg = prompts["en"]
+                else:
+                    msg = prompts[prompt_id]
+
                 messages = [
-                        {"role": "system", "content": f"{system_message}" + '\n\n' + prompts[prompt_id]},
+                        {"role": "system", "content": f"{system_message}" + '\n\n' + msg},
                         {"role": "user", "content":  text}
                     ]
                 qry = tokenizer.apply_chat_template(messages, tokenize=False)

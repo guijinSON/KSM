@@ -1,7 +1,7 @@
 prompts = {
     "default":"",
-    "ko":"Repond in Korean.",
-    "en":"Repond in English.",
+    "ko":"Respond in Korean.",
+    "en":"Respond in English.",
     "oasst":"### Instruction:\n{instruction}\n\n### Response:\n",
     "oasst_en":"### Instruction:\n{instruction}\n\n### Response:\n",
     "TBST":"""Follow the steps to solve the given question.

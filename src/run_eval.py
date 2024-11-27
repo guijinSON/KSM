@@ -15,6 +15,8 @@ parser.add_argument('--cats', nargs='+', default=['MATH', 'GSM8K', 'OMNI_MATH', 
                     help="List of dataset categories to process, separated by spaces.")
 parser.add_argument('--model_name', type=str, default='gpt-4o',
                     help="Name of the model to use for generating predictions.")
+parser.add_argument('--prompt_type', tyep=str, default="k2k",
+                    help="Setup for evaluation. ['k2k', 'k2e', 'e2k', 'e2e']")
 parser.add_argument('--prompt_id', type=str, default="default",
                     help="Prompt to use for eval.")
 
@@ -23,6 +25,7 @@ args = parser.parse_args()
 # Retrieve arguments
 cats = args.cats
 model_name = args.model_name
+prompt_type = args.prompt_type
 prompt_id = args.prompt_id
 
 # Load datasets
@@ -40,11 +43,11 @@ os.makedirs(f'{prompt_id}_results/{model_path}', exist_ok=True)
 scores = {}
 for k, df in tqdm(dfs.items(),total=len(dfs)):
     if model_name in litellm_models:
-        prompts = generate_queries_litellm(df, model_name, prompt_id)
+        prompts = generate_queries_litellm(df, model_name, prompt_type, prompt_id)
         responses = batch_completion(model=model_name, messages = prompts)
         outputs = [resp.choices[0].message.content for resp in responses]
     else:
-        prompts = generate_queries_local(df, model_name, prompt_id)
+        prompts = generate_queries_local(df, model_name, prompt_type, prompt_id)
         outputs = llm.generate(prompts, params)
         outputs = [output.outputs[0].text.strip("</s2>") for output in outputs]
     
