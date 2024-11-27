@@ -104,12 +104,12 @@ def generate_queries_local(df, model_name, prompt_id):
     qrys = []
     
     for _,row in df.iterrows():
-        if prompt_id == "en":
+        if prompt_id in ["en",'oasst_en']:
             text = row.original
         else:
             text = row.question
         try:
-            if prompt_id == 'oasst':
+            if 'oasst' in prompt_id:
                 qry = prompts[prompt_id].replace("{instruction}",text)
             else:
                 messages = [
