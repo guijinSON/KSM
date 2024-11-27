@@ -57,7 +57,10 @@ for k, df in tqdm(dfs.items(),total=len(dfs)):
     elif k == "MMMLU":
         score = sum([1 for _,row in df.iterrows() if any([parse_mcqa_value(row.question,row.solution,row.answer)])])/len(df)*100
     elif k == "KSM":
-        score = sum([1 for _,row in df.iterrows() if parse_ksm_value(row.question,row.solution,row.answer)])/len(df)*100
+        if prompt_id in ["en", "oasst_en", "e2e", "e2k"]:
+            score = sum([1 for _,row in df.iterrows() if parse_ksm_value(row.question,row.solution,row.original_answer)])/len(df)*100
+        else:
+            score = sum([1 for _,row in df.iterrows() if parse_ksm_value(row.question,row.solution,row.answer)])/len(df)*100
     scores[k] = score
 
 os.makedirs(f"{prompt_id}_json_result", exist_ok=True)
