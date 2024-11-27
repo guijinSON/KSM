@@ -15,7 +15,7 @@ parser.add_argument('--cats', nargs='+', default=['MATH', 'GSM8K', 'OMNI_MATH', 
                     help="List of dataset categories to process, separated by spaces.")
 parser.add_argument('--model_name', type=str, default='gpt-4o',
                     help="Name of the model to use for generating predictions.")
-parser.add_argument('--prompt_type', tyep=str, default="k2k",
+parser.add_argument('--prompt_type', type=str, default="k2k",
                     help="Setup for evaluation. ['k2k', 'k2e', 'e2k', 'e2e']")
 parser.add_argument('--prompt_id', type=str, default="default",
                     help="Prompt to use for eval.")
