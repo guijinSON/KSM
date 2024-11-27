@@ -99,12 +99,12 @@ def parse_ksm_value(question,text,answer):
         except:
             return parse_boxed_content_value(text, answer)
         
-def generate_queries_local(df, model_name, prompt_type, prompt_id):
+def generate_queries_local(df, model_name, prompt_id):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     qrys = []
     
     for _,row in df.iterrows():
-        if (prompt_id in ["en",'oasst_en']) or (prompt_type in ["e2e", "e2k"]):
+        if prompt_id in ["en",'oasst_en', 'e2e', 'e2k']:
             text = row.original
         else:
             text = row.question
@@ -113,9 +113,9 @@ def generate_queries_local(df, model_name, prompt_type, prompt_id):
             if 'oasst' in prompt_id:
                 qry = prompts[prompt_id].replace("{instruction}",text)
             else:
-                if prompt_type in ["k2k", "k2e"]:
+                if prompt_id in ["k2k", "k2e"]:
                     msg = prompts["ko"]
-                elif prompt_type in ["e2e", "e2k"]:
+                elif prompt_id in ["e2e", "e2k"]:
                     msg = prompts["en"]
                 else:
                     msg = prompts[prompt_id]

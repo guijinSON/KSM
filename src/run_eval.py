@@ -15,8 +15,6 @@ parser.add_argument('--cats', nargs='+', default=['MATH', 'GSM8K', 'OMNI_MATH', 
                     help="List of dataset categories to process, separated by spaces.")
 parser.add_argument('--model_name', type=str, default='gpt-4o',
                     help="Name of the model to use for generating predictions.")
-parser.add_argument('--prompt_type', type=str, default="k2k",
-                    help="Setup for evaluation. ['k2k', 'k2e', 'e2k', 'e2e']")
 parser.add_argument('--prompt_id', type=str, default="default",
                     help="Prompt to use for eval.")
 
@@ -35,8 +33,8 @@ dfs = {cat: pd.DataFrame(load_dataset('HAERAE-HUB/ksm', cat)['test']) for cat in
 if model_name not in litellm_models:
     llm, params = load_vllm_model(model_name)
 
-os.makedirs(f'{prompt_id}_results', exist_ok=True)
 model_path = model_name.replace('/','_')
+os.makedirs(f'{prompt_id}_results', exist_ok=True)
 os.makedirs(f'{prompt_id}_results/{model_path}', exist_ok=True)
 
 # Process each dataset and generate outputs
