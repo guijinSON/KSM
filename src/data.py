@@ -104,32 +104,29 @@ def generate_queries_local(df, model_name, prompt_id):
     qrys = []
     
     for _,row in df.iterrows():
-        if prompt_id in ["en",'oasst_en', 'e2e', 'e2k']:
-            text = row.original
-        else:
-            text = row.question
+        text = row[model_name]
 
         try:
             if 'oasst' in prompt_id:
                 qry = prompts[prompt_id].replace("{instruction}",text)
             else:
-                if prompt_id in ["k2k", "k2e"]:
+                if prompt_id in ["k2k", "e2k"]:
                     msg = prompts["ko"]
-                elif prompt_id in ["e2e", "e2k"]:
+                elif prompt_id in ["e2e", "k2e"]:
                     msg = prompts["en"]
                 else:
                     msg = prompts[prompt_id]
 
                 messages = [
-                        {"role": "system", "content": f"{system_message}" + '\n\n' + msg},
-                        {"role": "user", "content":  text}
+                        {"role": "system", "content": system_message},
+                        {"role": "user", "content": " ".join([text, msg])}
                     ]
                 qry = tokenizer.apply_chat_template(messages, tokenize=False)
             
         except TemplateError as e:
             if str(e) == 'System role not supported':
                 messages = [
-                    {"role": "user", "content": f"{system_message}" + '\n\n'+ prompts[prompt_id] + text}
+                    {"role": "user", "content": f"{system_message}" + '\n\n'+ text + prompts[prompt_id]}
                 ]
                 qry = tokenizer.apply_chat_template(messages, tokenize=False)
             else:
