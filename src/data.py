@@ -104,7 +104,10 @@ def generate_queries_local(df, model_name, prompt_id):
     qrys = []
     
     for _,row in df.iterrows():
-        text = row[model_name]
+        if prompt_id in ["en",'oasst_en', 'e2e', 'e2k']:
+            text = row.original
+        else:
+            text = row.question
 
         try:
             if 'oasst' in prompt_id:
