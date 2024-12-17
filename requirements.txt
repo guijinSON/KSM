@@ -4,3 +4,4 @@ datasets
 pandas
 antlr4-python3-runtime
 sympy
+latex2sympy2
