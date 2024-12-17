@@ -2,8 +2,8 @@ from transformers import AutoTokenizer
 import re
 from collections import Counter
 from jinja2.exceptions import TemplateError
-from sympy import sympify, simplify
-from sympy.parsing.latex import parse_latex
+from latex2sympy2 import latex2sympy
+from sympy import latex, simplify
 from prompts import prompts
 
 system_message = """Solve the given question.
@@ -29,15 +29,16 @@ def max_duplicated(input_str, thres=50):
 def match_digit_num(source_str, target_str, thres=10):
     source_n_count = len([1 for _ in source_str if _.isdigit()])
     target_n_count = len([1 for _ in target_str if _.isdigit()])
-    return abs(target_n_count-source_n_count) > thres
+    return abs(target_n_count-source_n_count) > three
 
-def latex_expressions_equal(solution, answer):
+def latex_expressions_equal(solution: str, answer: str) -> str:
     try:
-        sympy_expr1 = parse_latex(solution)
-        sympy_expr2 = parse_latex(answer)
-        return sympy_expr1 == sympy_expr2
+        sympy_solution, sympy_answer = latex2sympy(solution), latex2sympy(answer)
+        simplified_solution, simplified_answer = simplify(sympy_solution), simplify(sympy_answer)
+        return latex(simplified_solution) == latex(simplified_answer)
     except:
         return False
+    return latex(simplified_expr)
 
 def mcqa_formatting(question, answer):
     number_list = ["\n1. ", "\n2. ", "\n3. ", "\n4. ", "\n5. "]
