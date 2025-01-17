@@ -42,14 +42,21 @@ def process_solutions(df):
     return output, retry_n, no_retry_n
 
 def calculate_metrics(output):
-    """Calculate accuracy metrics"""
+    """
+    Calculate accuracy metrics from the output list where each entry is
+    [initial_is_correct, retry_is_correct, no_retry_is_correct]
+    """
     total_samples = len(output)
     total_correct = 0
-    retry_correct = 0
-    retry_wrong = 0
     retry_total = 0
-    no_retry_correct = 0
     no_retry_total = 0
+    no_retry_correct = 0
+    
+    # Detailed retry cases
+    true_true = 0    # Initially correct, retry correct
+    true_false = 0   # Initially correct, retry wrong 
+    false_true = 0   # Initially wrong, retry correct
+    false_false = 0  # Initially wrong, retry wrong
     
     for initial, retry, no_retry in output:
         # Case 1: Solution with retry
@@ -57,9 +64,16 @@ def calculate_metrics(output):
             retry_total += 1
             if retry:  # If retry was correct
                 total_correct += 1
-                retry_correct += 1
-            else:
-                retry_wrong += 1
+                
+            # Categorize retry cases
+            if initial and retry:
+                true_true += 1
+            elif initial and not retry:
+                true_false += 1
+            elif not initial and retry:
+                false_true += 1
+            else:  # not initial and not retry
+                false_false += 1
                 
         # Case 2: Solution without retry
         else:  # This means it was a no_retry case
@@ -70,27 +84,41 @@ def calculate_metrics(output):
     
     # Calculate metrics
     total_accuracy = (total_correct / total_samples) * 100
-    retry_accuracy = (retry_correct / retry_total) * 100 if retry_total > 0 else 0
+    retry_accuracy = ((true_true + false_true) / retry_total) * 100 if retry_total > 0 else 0
     no_retry_accuracy = (no_retry_correct / no_retry_total) * 100 if no_retry_total > 0 else 0
     
-    # Calculate retry success rate
-    retry_success_rate = (retry_correct / retry_total) * 100 if retry_total > 0 else 0
-    retry_failure_rate = (retry_wrong / retry_total) * 100 if retry_total > 0 else 0
+    # Calculate percentages for retry cases
+    retry_case_percentages = {
+        'true_true': (true_true / retry_total * 100) if retry_total > 0 else 0,
+        'true_false': (true_false / retry_total * 100) if retry_total > 0 else 0,
+        'false_true': (false_true / retry_total * 100) if retry_total > 0 else 0,
+        'false_false': (false_false / retry_total * 100) if retry_total > 0 else 0
+    }
     
     return {
         'total_accuracy': round(total_accuracy, 2),
         'retry_accuracy': round(retry_accuracy, 2),
         'no_retry_accuracy': round(no_retry_accuracy, 2),
-        'retry_success_rate': round(retry_success_rate, 2),
-        'retry_failure_rate': round(retry_failure_rate, 2),
         'counts': {
             'total_samples': total_samples,
             'retry_total': retry_total,
             'no_retry_total': no_retry_total,
-            'retry_correct': retry_correct,
-            'retry_wrong': retry_wrong
+            'retry_cases': {
+                'true_true': true_true,    # Initially correct → retry correct
+                'true_false': true_false,  # Initially correct → retry wrong
+                'false_true': false_true,  # Initially wrong → retry correct
+                'false_false': false_false # Initially wrong → retry wrong
+            }
+        },
+        'retry_percentages': {
+            'true_true': round(retry_case_percentages['true_true'], 2),
+            'true_false': round(retry_case_percentages['true_false'], 2),
+            'false_true': round(retry_case_percentages['false_true'], 2),
+            'false_false': round(retry_case_percentages['false_false'], 2)
         }
     }
+
+# Example usage:
 
 def main():
     # Set up argument parser
@@ -114,20 +142,28 @@ def main():
     
     # Calculate metrics
     metrics = calculate_metrics(output)
-    
-    # Print results
     print(f"Overall Accuracy: {metrics['total_accuracy']}%")
     print(f"\nBreakdown by retry status:")
     print(f"Retry Accuracy: {metrics['retry_accuracy']}%")
     print(f"No Retry Accuracy: {metrics['no_retry_accuracy']}%")
-    print(f"\nRetry Performance:")
-    print(f"Success Rate when Retrying: {metrics['retry_success_rate']}%")
-    print(f"Failure Rate when Retrying: {metrics['retry_failure_rate']}%")
-    print(f"\nCounts:")
+    
+    print(f"\nDetailed Retry Cases:")
+    print("Counts:")
+    print(f"Initially correct → retry correct:  {metrics['counts']['retry_cases']['true_true']}")
+    print(f"Initially correct → retry wrong:    {metrics['counts']['retry_cases']['true_false']}")
+    print(f"Initially wrong → retry correct:    {metrics['counts']['retry_cases']['false_true']}")
+    print(f"Initially wrong → retry wrong:      {metrics['counts']['retry_cases']['false_false']}")
+    
+    print("\nPercentages of retry cases:")
+    print(f"Initially correct → retry correct:  {metrics['retry_percentages']['true_true']}%")
+    print(f"Initially correct → retry wrong:    {metrics['retry_percentages']['true_false']}%")
+    print(f"Initially wrong → retry correct:    {metrics['retry_percentages']['false_true']}%")
+    print(f"Initially wrong → retry wrong:      {metrics['retry_percentages']['false_false']}%")
+    
+    print(f"\nTotal Counts:")
     print(f"Total samples: {metrics['counts']['total_samples']}")
     print(f"Total retries: {metrics['counts']['retry_total']}")
-    print(f"Successful retries: {metrics['counts']['retry_correct']}")
-    print(f"Failed retries: {metrics['counts']['retry_wrong']}")
+    print(f"No retries: {metrics['counts']['no_retry_total']}")
     
     # Save results to JSON
     try:
