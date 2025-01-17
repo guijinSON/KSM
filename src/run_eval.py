@@ -26,7 +26,7 @@ model_name = args.model_name
 prompt_id = args.prompt_id
 
 # Load datasets
-dfs = {cat: pd.DataFrame(load_dataset('HAERAE-HUB/ksm', cat)['test']) for cat in cats}
+dfs = {cat: pd.DataFrame(load_dataset('HAERAE-HUB/HRM8K', cat)['test']) for cat in cats}
 
 # Load model
 if model_name not in litellm_models:
