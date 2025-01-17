@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 import argparse
-from src.data import answer_in_last_sentence, parse_boxed_value
+from data import answer_in_last_sentence, parse_boxed_value
 
 def check_correct(solution, answer):
     if any([answer_in_last_sentence(solution,answer),parse_boxed_value(solution,answer)]):
