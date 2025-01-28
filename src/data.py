@@ -6,8 +6,7 @@ from latex2sympy2 import latex2sympy
 from sympy import latex, simplify
 from prompts import prompts
 
-system_message = """Solve the given question.
-After solving the problem, state your final answer in the following format: $\\boxed{N}$."""
+system_message = " "
 
 def check_duplication(input_str, thres=10):
     count = dict(Counter(input_str.split()))
