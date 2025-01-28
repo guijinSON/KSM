@@ -124,7 +124,7 @@ def generate_queries_local(df, model_name, prompt_id):
                     {"role": "system", "content": system_message},
                     {"role": "user", "content": " ".join([text, msg])}
                 ]
-            qry = tokenizer.apply_chat_template(messages, tokenize=False)
+            qry = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             
         except TemplateError as e:
             if str(e) == 'System role not supported':
