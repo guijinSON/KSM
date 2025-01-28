@@ -45,6 +45,7 @@ for k, df in tqdm(dfs.items(),total=len(dfs)):
         outputs = [resp.choices[0].message.content for resp in responses]
     else:
         prompts = generate_queries_local(df, model_name, prompt_id)
+        print(prompts[0])
         outputs = llm.generate(prompts, params)
         outputs = [output.outputs[0].text.strip("</s2>") for output in outputs]
     
@@ -61,7 +62,8 @@ for k, df in tqdm(dfs.items(),total=len(dfs)):
         else:
             score = sum([1 for _,row in df.iterrows() if parse_ksm_value(row.question,row.solution,row.answer)])/len(df)*100
     scores[k] = score
-
+    print(scores)
+  
 os.makedirs(f"{prompt_id}_json_result", exist_ok=True)
 with open(f"{prompt_id}_json_result/{model_path}.json", "w") as f:
     json.dump(scores, f, indent=4)
