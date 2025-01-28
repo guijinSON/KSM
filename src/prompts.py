@@ -1,5 +1,6 @@
 prompts = {
     "default":"",
+    "default_ko":"",
     "ko":"Respond in Korean.",
     "en":"Respond in English.",
     "oasst":"### Instruction:\n{instruction}\n\n### Response:\n",
